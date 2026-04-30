@@ -2,7 +2,7 @@ CC = gcc
 CFLAGS = -Wall -Wextra -Iinclude
 
 TARGET = history_db
-SRCS = src/main.c
+SRCS = src/main.c src/linked_list.c
 
 all: $(TARGET)
 
