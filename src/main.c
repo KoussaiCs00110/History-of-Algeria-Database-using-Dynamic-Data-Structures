@@ -6,7 +6,7 @@ int main() {
     printf("History of Algeria Database using Dynamic Data Structures\n");
     printf("\n\n\\n");
 
-    FILE *file = fopen("data/database.txt", "r");
+    FILE *file = fopen("data/history.txt", "r");
     if (file == NULL) {
         printf("Error: Could not open database file.\n");
         return 1;
