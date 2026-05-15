@@ -267,10 +267,63 @@ TList *deletepersonality(FILE *f, TList *s, TList *a, char *name) {
   rename("data/tmp.txt", "data/persons.txt");
   return s;
 }
-void updatePersonality(FILE *f, TList *s, TList *a, char *name,
-                       char *definition, char *DoB, char *DoD) {}
+TList *updatePersonality(FILE *f, TList *s, TList *a, char *name, char *definition, char *DoB, char *DoD) {
+  TList *current = s;
+  while (current != NULL) {
+    if (strcmp(current->name, name) == 0) {
+      if (definition) strcpy(current->definition, definition);
+      if (DoB) strcpy(current->DoB, DoB);
+      if (DoD) strcpy(current->DoD, DoD);
+    }
+    current = current->next;
+  }
 
-TList *similarPersonality(TList *s, char *word) {}
+  current = a;
+  while (current != NULL) {
+    if (strcmp(current->name, name) == 0) {
+      if (definition) strcpy(current->definition, definition);
+      if (DoB) strcpy(current->DoB, DoB);
+      if (DoD) strcpy(current->DoD, DoD);
+    }
+    current = current->next;
+  }
+
+  FILE *tmp = fopen("data/tmp.txt", "w");
+  if (tmp && f) {
+    rewind(f);
+    char line[256];
+    char name2[64];
+    while (fgets(line, sizeof(line), f)) {
+      strcpy(name2, line);
+      char *eq = strstr(name2, "=");
+      if (eq) *eq = '\0';
+      name2[strcspn(name2, "\n")] = '\0';
+      
+      if (strcmp(name, name2) == 0) {
+        fprintf(tmp, "%s=%s{%s}{%s}\n", name, definition, DoB, DoD);
+      } else {
+        fputs(line, tmp);
+      }
+    }
+    fclose(tmp);
+    fclose(f);
+    remove("data/history.txt");
+    rename("data/tmp.txt", "data/history.txt");
+  }
+  return s;
+}
+
+TList *similarPersonality(TList *s, char *word) {
+  TList *current = s;
+  TList *head = NULL;
+  while (current != NULL) {
+    if (strstr(current->DoB, word) != NULL || strstr(current->DoD, word) != NULL) {
+      head = insertAtTail(head, current->name, current->definition, current->DoB, current->DoD);
+    }
+    current = current->next;
+  }
+  return head;
+}
 
 TList *countPersonality(TList *s, date *prt) {
   TList *current = s;
