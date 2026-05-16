@@ -7,12 +7,15 @@ TTree* insertToBST(TTree *tr, char *name, char *definition, char *DoB, char *DoD
 TTree* toTree(TStack *stk);
 TTree* fillTree(FILE *f);
 TTree* getInfoNameTree(TTree *tr, char *name);
+
 TStack* addNameBST(TTree *tr, char *name, char *DoB, char *DoD);
 TTree* deleteNameBST(TTree *tr, char *name);
 TTree* updateNameBST(TTree *tr, char *name, char *s, char *DoB, char *DoD);
+
 TTree* traversalBSTinOrder(TTree *tr);
 TTree* traversalBSTpreOrder(TTree *tr);
 TTree* traversalBSTpostOrder(TTree *tr);
+
 void heightSizeBST(TTree *tr, int *height, int *size);
 TTree* lowestCommonAncestor(TTree *tr, char *word1, char *word2);
 int countNodesRange(TTree *tr, char *l, char *h);
