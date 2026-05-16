@@ -17,7 +17,6 @@ int distinctSubseqWord(char *event);
 bool isPalindromeWord(char *event, int i, int j);
 
 /* Recursive date helpers */
-date *convert(char str[]);
 void longestSubyear(FILE *f, char *date1, char *date2);
 
 #endif

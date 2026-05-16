@@ -81,7 +81,7 @@ void namePermutation(char *name, int start, int end) {
     }
   }
 }
-date *convert(char str[]) {
+static date *convert(char str[]) {
   date *d = malloc(sizeof(date));
   if (!d)
     return NULL;
@@ -153,12 +153,13 @@ void longestSubyear(FILE *f, char *date1, char *date2) {
     longestSubyear(f, date1, date2);
 }
 int distinctSubseqWord(char *event){
-    
+    if(event == NULL) return 0;
+    if(*event == '\0') return 0;
+    return 2 * distinctSubseqWord(event + 1) + 1;
 }
 bool isPalindromeWord(char *event ,int i,int j){
     if(i>j) return true;
     if(event[i]!=event[j]) return false;
     return isPalindromeWord(event,i+1,j-1);
 }
-
 
