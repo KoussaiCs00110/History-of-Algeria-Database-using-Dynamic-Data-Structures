@@ -1,6 +1,12 @@
 #include <stdio.h>
+#include <string.h>
 #include <stdlib.h>
-#include "../include/data_structures.h"
+#include "types.h"
+#include "linked_list.h"
+#include "stack.h"
+#include "bst.h"
+#include "recursion.h"
+
 
 int main() {
     printf("History of Algeria Database using Dynamic Data Structures\n");
@@ -19,3 +25,8 @@ int main() {
     fclose(file);
     return 0;
 }
+static TList  *personalities = NULL;
+static TList  *date_list     = NULL;
+static TStack *stack         = NULL;
+static TTree  *tree          = NULL;
+static char    filepath[512];
