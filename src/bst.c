@@ -79,26 +79,27 @@ TTree* getInfoNameTree(TTree *tr, char *name){
     }
 }
 
-/*TStack* addNameBST(TTree *tr, char *name, char *DoB, char *DoD): this function adds a word with dates of 
+/*TTree* addNameBST(TTree *tr, char *name, char *DoB, char *DoD): this function adds a word with dates of 
 birth and death into a sorted tree*/
-TStack* addNameBST(TTree *tr, char *name, char *DoB, char *DoD){
-    if(tr == NULL) return NULL;
-    if(strcmp(name, tr->name) == 0){
-        TStack *newNode = (TStack*)malloc(sizeof(TStack));
-        strcpy(newNode->name, tr->name);
-        strcpy(newNode->definition, tr->definition);
-        strcpy(newNode->DoB, tr->DoB);
-        strcpy(newNode->DoD, tr->DoD);
-        strcpy(newNode->event_date, tr->event_date);
-        newNode->next = NULL;
+TTree* addNameBST(TTree *tr, char *name, char *DoB, char *DoD){
+    if(tr == NULL){
+        TTree *newNode = malloc(sizeof(TTree));
+        strcpy(newNode->name, name);
+        strcpy(newNode->DoB, DoB);
+        strcpy(newNode->DoD, DoD);
+        strcpy(newNode->definition, "");
+        strcpy(newNode->event_date, "");
+        newNode->left = NULL;
+        newNode->right = NULL;
         return newNode;
     }
-    else if(strcmp(name, tr->name) < 0){
-        return addNameBST(tr->left, name, DoB, DoD);
-    }
-    else{
-        return addNameBST(tr->right, name, DoB, DoD);
-    }
+
+    if(strcmp(name, tr->name) < 0)
+        tr->left = addNameBST(tr->left, name, DoB, DoD);
+    else if(strcmp(name, tr->name) > 0)
+        tr->right = addNameBST(tr->right, name, DoB, DoD);
+
+    return tr;
 }
 /**TTree* deleteNameBST(TTree *tr, char *name): this function deletes a name from the tree*/
 TTree* deleteNameBST(TTree *tr, char *name){
