@@ -1,0 +1,5 @@
+.git.bak/
+history_gui
+history_db
+*.a
+*.o

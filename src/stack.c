@@ -13,6 +13,7 @@ TStack* toStack(TList *merged){
         strcpy(newNode->definition, current->definition);
         strcpy(newNode->DoB, current->DoB);
         strcpy(newNode->DoD, current->DoD);
+        newNode->event_date[0] = '\0';
         newNode->next = stack;
         stack = newNode;
         current = current->next;
@@ -145,6 +146,7 @@ TStack* addNameStack(TStack *stk, char *name, char *definition, char *DoB, char 
     strcpy(newNode->definition, definition);
     strcpy(newNode->DoB, DoB);
     strcpy(newNode->DoD, DoD);
+    newNode->event_date[0] = '\0';
     newNode->next = stk;
     return newNode;    
 }

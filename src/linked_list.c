@@ -9,6 +9,11 @@ TList *createNode(char *name, char *definition, char *DoB, char *DoD) {
     printf("Error: Could not allocate memory for the node.\n");
     return NULL;
   }
+  /* zero-init all fields first to avoid garbage */
+  node->name[0] = '\0';
+  node->definition[0] = '\0';
+  node->DoB[0] = '\0';
+  node->DoD[0] = '\0';
   if (name)
     strcpy(node->name, name);
   if (definition)
@@ -60,6 +65,7 @@ TList *insertAtTail(TList *head, char *name, char *definition, char *DoB,
   return head;
 }
 void endpointhead(TList *head) {
+  if (head == NULL) return;
   TList *current = head;
   while (current->next != NULL) {
     current = current->next;
@@ -167,19 +173,19 @@ TList *sortWord(TList *syn) {
   for (i = syn; i->next != NULL; i = i->next) {
     for (j = i->next; j != NULL; j = j->next) {
       if (strcmp(i->name, j->name) > 0) {
-        char temp[100];
-        strcpy(temp, i->name);
+        char tmp_name[100], tmp_def[500], tmp_dob[20], tmp_dod[20];
+        strcpy(tmp_name, i->name);
         strcpy(i->name, j->name);
-        strcpy(j->name, temp);
-        strcpy(temp, i->definition);
+        strcpy(j->name, tmp_name);
+        strcpy(tmp_def, i->definition);
         strcpy(i->definition, j->definition);
-        strcpy(j->definition, temp);
-        strcpy(temp, i->DoB);
+        strcpy(j->definition, tmp_def);
+        strcpy(tmp_dob, i->DoB);
         strcpy(i->DoB, j->DoB);
-        strcpy(j->DoB, temp);
-        strcpy(temp, i->DoD);
+        strcpy(j->DoB, tmp_dob);
+        strcpy(tmp_dod, i->DoD);
         strcpy(i->DoD, j->DoD);
-        strcpy(j->DoD, temp);
+        strcpy(j->DoD, tmp_dod);
       }
     }
   }
@@ -194,19 +200,19 @@ TList *sortWord2(TList *syn) {
   for (i = syn; i->next != NULL; i = i->next) {
     for (j = i->next; j != NULL; j = j->next) {
       if (strlen(i->name) > strlen(j->name)) {
-        char tmp[100];
-        strcpy(tmp, i->name);
+        char tmp_name[100], tmp_def[500], tmp_dob[20], tmp_dod[20];
+        strcpy(tmp_name, i->name);
         strcpy(i->name, j->name);
-        strcpy(j->name, tmp);
-        strcpy(tmp, i->definition);
+        strcpy(j->name, tmp_name);
+        strcpy(tmp_def, i->definition);
         strcpy(i->definition, j->definition);
-        strcpy(j->definition, tmp);
-        strcpy(tmp, i->DoB);
+        strcpy(j->definition, tmp_def);
+        strcpy(tmp_dob, i->DoB);
         strcpy(i->DoB, j->DoB);
-        strcpy(j->DoB, tmp);
-        strcpy(tmp, i->DoD);
+        strcpy(j->DoB, tmp_dob);
+        strcpy(tmp_dod, i->DoD);
         strcpy(i->DoD, j->DoD);
-        strcpy(j->DoD, tmp);
+        strcpy(j->DoD, tmp_dod);
       }
     }
   }
@@ -223,7 +229,8 @@ date *convert(char str[]) {
   return d;
 }
 int agecalculate(date *start, date *end) {
-  if (end == NULL)
+  if (start == NULL || start->year == 0) return 0;
+  if (end == NULL || end->year == 0)
     return 2025 - start->year;
   return end->year - start->year;
 }
@@ -239,19 +246,19 @@ TList *sortPersonality(TList *syn) {
     for (j = i->next; j != NULL; j = j->next) {
       if (agecalculate(convert(i->DoB), convert(i->DoD)) >
           agecalculate(convert(j->DoB), convert(j->DoD))) {
-        char temp[100];
-        strcpy(temp, i->name);
+        char tmp_name[100], tmp_def[500], tmp_dob[20], tmp_dod[20];
+        strcpy(tmp_name, i->name);
         strcpy(i->name, j->name);
-        strcpy(j->name, temp);
-        strcpy(temp, i->definition);
+        strcpy(j->name, tmp_name);
+        strcpy(tmp_def, i->definition);
         strcpy(i->definition, j->definition);
-        strcpy(j->definition, temp);
-        strcpy(temp, i->DoB);
+        strcpy(j->definition, tmp_def);
+        strcpy(tmp_dob, i->DoB);
         strcpy(i->DoB, j->DoB);
-        strcpy(j->DoB, temp);
-        strcpy(temp, i->DoD);
+        strcpy(j->DoB, tmp_dob);
+        strcpy(tmp_dod, i->DoD);
         strcpy(i->DoD, j->DoD);
-        strcpy(j->DoD, temp);
+        strcpy(j->DoD, tmp_dod);
       }
     }
   }
@@ -374,7 +381,7 @@ TList *palindromeName(TList *s) {
   TList *head = NULL;
   while (current != NULL) {
     if (isPalindrome(current->name) == 1) {
-      insertAtHead(head, current->name, current->definition, current->DoB,
+      head = insertAtHead(head, current->name, current->definition, current->DoB,
                    current->DoD);
     }
     current = current->next;
@@ -384,13 +391,12 @@ TList *palindromeName(TList *s) {
 /* TList* mergeNodes(TList *s, TList *a): this function merges the two nodes of the first and third lists (personality,
    and dates) into one node of a bidirectional list. */
 TList *mergeNodes(TList *s, TList *a) {
+  if (s == NULL || a == NULL) return NULL;
   TList *current = s;
   TList *current2 = a;
   TList *head = NULL;
-  while (current != NULL && current2 != NULL &&
-         strcmp(current->name, current2->name) > 0 &&
-         strlen(current->name) > strlen(current2->name)) {
-    insertAtHead(head, current->name, current->definition, current2->DoB,
+  while (current != NULL && current2 != NULL) {
+    head = insertAtTail(head, current->name, current->definition, current2->DoB,
                  current2->DoD);
     current2 = current2->next;
     current = current->next;
@@ -400,29 +406,29 @@ TList *mergeNodes(TList *s, TList *a) {
 /* TList* merge2Nodes(TList *s, TList *a): this function merges the two nodes of two previous lists into one node
    of a circular list. */
 TList *merge2Nodes(TList *s, TList *a) {
+  if (s == NULL || a == NULL) return NULL;
   TList *current = s;
   TList *current2 = a;
   TList *head = NULL;
-  while (current != NULL && current2 != NULL &&
-         strcmp(current->name, current2->name) > 0 &&
-         strlen(current->name) > strlen(current2->name)) {
-    insertAtHead2(head, current->name, current->definition, current2->DoB,
+  while (current != NULL && current2 != NULL) {
+    head = insertAtHead2(head, current->name, current->definition, current2->DoB,
                   current2->DoD);
     current2 = current2->next;
     current = current->next;
   }
-  endpointhead(head);
+  if (head != NULL) endpointhead(head);
   return head;
 }
 /* TList* addPersonality(TList *s, TList *a, char *name, char *DoB, char *DoD): this function adds a personality
    with name and dates into the first and last list, also in the text file. */
-TList *addPersonality(TList *s, TList *a, char *name, char *definition,
-                      char *DoB, char *DoD) {
+TList *addPersonality(TList *s, TList *a, char *name, char *definition,char *DoB, char *DoD) {
   s = insertAtHead(s, name, definition, DoB, DoD);
   a = insertAtHead(a, name, definition, DoB, DoD);
   FILE *f = fopen("data/history.txt", "a");
-  fprintf(f, "%s=%s{%s}{%s}\n", name, definition, DoB, DoD);
-  fclose(f);
+  if (f) {
+    fprintf(f, "%s=%s{%s}{%s}\n", name, definition ? definition : "", DoB ? DoB : "", DoD ? DoD : "");
+    fclose(f);
+  }
   return s;
 }
 /* TList* addEvents(TList *b, char *namEvente, char *date): this function adds an event with its date, to the second
@@ -430,8 +436,10 @@ TList *addPersonality(TList *s, TList *a, char *name, char *definition,
 TList *addEvents(TList *b, char *namEvente, char *date) {
   b = insertAtTail(b, namEvente, NULL, NULL, date);
   FILE *f = fopen("data/events.txt", "a");
-  fprintf(f, "%s=%s{%s}{%s}\n", namEvente, "", "", date);
-  fclose(f);
+  if (f) {
+    fprintf(f, "%s=%s{%s}{%s}\n", namEvente ? namEvente : "", "", "", date ? date : "");
+    fclose(f);
+  }
   return b;
 }
 // queues part :
@@ -439,6 +447,11 @@ NodeQueue *createQNode(char *name, char *definition, char *DoB, char *DoD) {
   NodeQueue *node = (NodeQueue *)malloc(sizeof(NodeQueue));
   if (node == NULL)
     return NULL;
+  /* zero-init all fields first to avoid garbage */
+  node->name[0] = '\0';
+  node->definition[0] = '\0';
+  node->DoB[0] = '\0';
+  node->DoD[0] = '\0';
   if (name)
     strcpy(node->name, name);
   if (definition)
@@ -513,6 +526,7 @@ void freeQueue(TQueue *queue) {
 void initQueue(TQueue *queue) { queue->front = queue->rear = NULL; }
 // counts the number of words in a name
 int countWords(char *name) {
+  if (name == NULL || name[0] == '\0') return 0;
   int count = 1;
   int len = (int)strlen(name);
   for (int i = 0; i < len; i++) {

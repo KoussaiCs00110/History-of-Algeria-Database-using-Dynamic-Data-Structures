@@ -7,7 +7,6 @@
 #include <string.h>
 
 // 1. Basic Date Structure
-// date data stracture :
 typedef struct {
   int day;
   int month;
@@ -15,7 +14,7 @@ typedef struct {
   char full_date[20];
 } date;
 
-// 2. Linked List Nodes :
+// 2. Linked List Nodes (bidirectional)
 typedef struct NodeList {
   char name[100];
   char definition[500];

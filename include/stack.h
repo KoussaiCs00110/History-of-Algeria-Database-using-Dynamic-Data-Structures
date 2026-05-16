@@ -7,7 +7,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-/* Section 3 - Stack Modules */
+/* ── Section 3 - Stack Modules ── */
 TStack* toStack(TList *merged);
 TStack* getInfoPersonality(TStack *stk, char *name);
 TStack* sortNameStack(TStack *s);
@@ -17,6 +17,7 @@ TQueue* stackToQueue(TStack *stk);
 TList*  stackToList(TStack *stk);
 TStack* addNameStack(TStack *stk, char *name, char *definition, char *DoB, char *DoD);
 TStack* definitionStack(TStack *stk);
+void    sortEventStack(TStack *stk);
 void    pronunciationStack(TStack *stk, TStack **shortStack, TStack **longStack);
 char*   getSmallest(TStack *stk);
 void    continuousSearch(TStack *stk);
@@ -24,4 +25,3 @@ bool    isPersonalityKilled(char *word);
 TStack* recRevStack(TStack *stk);
 
 #endif
-
