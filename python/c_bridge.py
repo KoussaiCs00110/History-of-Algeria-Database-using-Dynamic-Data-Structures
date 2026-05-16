@@ -8,3 +8,6 @@ import ctypes
 import json
 import os
 import sys
+lib = ctypes.CDLL( '../lib/libhistory.so')
+
+BUF = 65536
