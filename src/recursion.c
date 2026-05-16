@@ -3,7 +3,8 @@
 #include <stdlib.h>
 #include <string.h>
 
-// all function in this file work with recursion
+/* int countOccurence(File *f, char *name): this function counts the number of occurrences of a name in the file
+   using recursion. */
 int countOccurence(FILE *f, char *name){
     char line[256];
     if (fgets(line, sizeof(line), f) == NULL){
@@ -22,6 +23,8 @@ int countOccurence(FILE *f, char *name){
     return countOccurence(f, name);
 
 }
+/* File* removeOccurence(File *f, char *word): this function removes all the occurrences of a name from the file
+   using recursion. */
 FILE* removeOccurrence(FILE *f, FILE *tmp, char *word) {
     char line[256];
     if (fgets(line, sizeof(line), f) == NULL) {
@@ -39,6 +42,8 @@ FILE* removeOccurrence(FILE *f, FILE *tmp, char *word) {
     }
     return removeOccurrence(f, tmp, word);
 }
+/* File* replaceOccurence(File *f, char *name, char *DoB, char *DoD): this recursive function replaces all the
+   occurrences of a name from the file by the string name. */
 FILE* replaceOccurence(FILE *f, FILE *tmp, char *name, char *definition, char *DoB, char *DoD) {
 
     char line[256];
@@ -69,6 +74,7 @@ void swap(char *a, char *b) {
     *a = *b;
     *b = temp;
 }
+/* void namePermutation(char *name): this procedure prints all the permutations of a given name using recursion. */
 void namePermutation(char *name, int start, int end) {
   int i;
   if (start == end) {
@@ -107,11 +113,13 @@ void printSub(char *word, char *res, int i, int j) {
     printSub(word, res, i + 1, j + 1);
 }
 
-// this recursive procedure generates all possible subsequences of a given event
+/* void subseqName(char *word): this recursive procedure generates all possible subsequences of a given event. */
 void subseqName(char *word) {
     char res[256]; // Simple fixed-size array instead of malloc
     printSub(word, res, 0, 0);
 }
+/* void longestSubyear(char *date1, char *date2): this recursive procedure prints all the events that overlap with
+   the mentioned dates. */
 void longestSubyear(FILE *f, char *date1, char *date2) {
     char line[512];
     if (fgets(line, sizeof(line), f) == NULL) return;
@@ -152,11 +160,14 @@ void longestSubyear(FILE *f, char *date1, char *date2) {
     free(d2);
     longestSubyear(f, date1, date2);
 }
+/* int distinctSubseqWord(char *event): this recursive function counts the number of distinct subsequences of the
+   given event. */
 int distinctSubseqWord(char *event){
     if(event == NULL) return 0;
     if(*event == '\0') return 0;
     return 2 * distinctSubseqWord(event + 1) + 1;
 }
+/* bool isPalindromeWord(char *event): this recursive function checks if a given event overlaps with a personality. */
 bool isPalindromeWord(char *event ,int i,int j){
     if(i>j) return true;
     if(event[i]!=event[j]) return false;
