@@ -26,8 +26,7 @@ TList *createNode(char *name, char *definition, char *DoB, char *DoD) {
   node->prev = NULL;
   return node;
 }
-TList *insertAtHead(TList *head, char *name, char *definition, char *DoB,
-                    char *DoD) {
+TList *insertAtHead(TList *head, char *name, char *definition, char *DoB, char *DoD) {
   TList *node = createNode(name, definition, DoB, DoD);
   if (node == NULL) {
     return NULL;
@@ -38,8 +37,7 @@ TList *insertAtHead(TList *head, char *name, char *definition, char *DoB,
   }
   return node;
 }
-TList *insertAtHead2(TList *head, char *name, char *definition, char *DoB,
-                     char *DoD) {
+TList *insertAtHead2(TList *head, char *name, char *definition, char *DoB, char *DoD) {
   TList *node = createNode(name, definition, DoB, DoD);
   if (node == NULL) {
     return NULL;
@@ -112,8 +110,7 @@ TList *getPersonality(FILE *f) {
   while (fgets(line, sizeof(line), f) != NULL) {
     line[strcspn(line, "\n")] = 0;
     char *name = strtok(line, "=");
-    strtok(NULL, "{");
-    char *definition = strtok(NULL, "}");
+    char *definition = strtok(NULL, "{");
     if (!name || !definition)
       continue;
     head = insertAtTail(head, name, definition, NULL, NULL);
@@ -381,8 +378,7 @@ TList *palindromeName(TList *s) {
   TList *head = NULL;
   while (current != NULL) {
     if (isPalindrome(current->name) == 1) {
-      head = insertAtHead(head, current->name, current->definition, current->DoB,
-                   current->DoD);
+      head = insertAtHead(head, current->name, current->definition, current->DoB,current->DoD);
     }
     current = current->next;
   }
