@@ -1,0 +1,27 @@
+Run Web
+
+From the repo root, build the shared library:
+gcc -shared -fPIC -Iinclude main_api.c src/linked_list.c src/stack.c src/bst.c src/recursion.c -o /tmp/history_bridge.so -lm
+Start Flask:
+
+
+python3 app.py
+
+
+Open http://127.0.0.1:5000
+
+
+
+
+
+
+Run Raylib
+
+If you want the existing GUI binary directly:
+./history_gui
+
+
+If you want to rebuild it first, use the existing Makefile flow:
+make gui
+
+./history_gui

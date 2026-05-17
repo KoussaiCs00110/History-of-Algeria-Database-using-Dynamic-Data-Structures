@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>History of Algeria Web Bridge</title>
+    <link rel="stylesheet" href="/style.css" />
+  </head>
+  <body>
+    <main class="shell">
+      <section class="hero">
+        <p class="eyebrow">C core + ctypes + Flask</p>
+        <h1>History of Algeria Web Bridge</h1>
+        <p class="lead">
+          Choose a section, pick a function, fill the fields, and run it.
+        </p>
+      </section>
+
+      <section class="layout">
+        <aside class="panel sidebar">
+          <div class="sidebar-head">
+            <p class="sidebar-kicker">Functions</p>
+            <h2>Sections</h2>
+          </div>
+          <div id="sidebarNav" class="sidebar-nav"></div>
+        </aside>
+
+        <section class="workspace">
+          <section class="panel action-panel">
+            <div class="action-head">
+              <p id="groupLabel" class="group-label">BST</p>
+              <h2 id="functionTitle">Function</h2>
+              <p id="hint" class="hint"></p>
+            </div>
+
+            <form id="functionForm" class="form-grid"></form>
+            <div id="emptyState" class="empty-state">
+              No input needed.
+            </div>
+
+            <div class="actions">
+              <button id="sendButton" type="submit" form="functionForm">
+                Run Function
+              </button>
+              <button id="resetButton" type="button" class="ghost">
+                Reset Fields
+              </button>
+            </div>
+          </section>
+
+          <section class="panel result-panel">
+            <div class="result-head">
+              <h2>Response</h2>
+              <span id="statusPill" class="pill">idle</span>
+            </div>
+            <pre id="resultOutput">{}</pre>
+          </section>
+        </section>
+      </section>
+    </main>
+
+    <script src="/script.js"></script>
+  </body>
+</html>
