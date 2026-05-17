@@ -26,7 +26,8 @@ TList *createNode(char *name, char *definition, char *DoB, char *DoD) {
   node->prev = NULL;
   return node;
 }
-TList *insertAtHead(TList *head, char *name, char *definition, char *DoB, char *DoD) {
+TList *insertAtHead(TList *head, char *name, char *definition, char *DoB,
+                    char *DoD) {
   TList *node = createNode(name, definition, DoB, DoD);
   if (node == NULL) {
     return NULL;
@@ -37,7 +38,8 @@ TList *insertAtHead(TList *head, char *name, char *definition, char *DoB, char *
   }
   return node;
 }
-TList *insertAtHead2(TList *head, char *name, char *definition, char *DoB, char *DoD) {
+TList *insertAtHead2(TList *head, char *name, char *definition, char *DoB,
+                     char *DoD) {
   TList *node = createNode(name, definition, DoB, DoD);
   if (node == NULL) {
     return NULL;
@@ -63,7 +65,8 @@ TList *insertAtTail(TList *head, char *name, char *definition, char *DoB,
   return head;
 }
 void endpointhead(TList *head) {
-  if (head == NULL) return;
+  if (head == NULL)
+    return;
   TList *current = head;
   while (current->next != NULL) {
     current = current->next;
@@ -102,8 +105,9 @@ void freeList(TList *head) {
     free(temp);
   }
 }
-/* TList* getPersonality(File *f): this function puts all personality names with their definitions into a linked list.
-   Each node contains the full name and their definition. */
+/* TList* getPersonality(File *f): this function puts all personality names with
+   their definitions into a linked list. Each node contains the full name and
+   their definition. */
 TList *getPersonality(FILE *f) {
   TList *head = NULL;
   char line[256];
@@ -117,8 +121,8 @@ TList *getPersonality(FILE *f) {
   }
   return head;
 }
-/* TList* getDatePersonality(File *f): this function puts all personality names with their dates of birth and death
-   into a linked list. */
+/* TList* getDatePersonality(File *f): this function puts all personality names
+   with their dates of birth and death into a linked list. */
 TList *getDatePersonality(FILE *f) {
   TList *head = NULL;
   char line[256];
@@ -135,8 +139,9 @@ TList *getDatePersonality(FILE *f) {
   }
   return head;
 }
-/* void getInfoByDates(TList *s, TList *DoB): this procedure takes a date of birth as input and returns the name
-   and information of the corresponding personality. */
+/* void getInfoByDates(TList *s, TList *DoB): this procedure takes a date of
+   birth as input and returns the name and information of the corresponding
+   personality. */
 void getInfoByDates(TList *s, char DoB[]) {
   TList *current = s;
   while (current != NULL) {
@@ -148,8 +153,9 @@ void getInfoByDates(TList *s, char DoB[]) {
     current = current->next;
   }
 }
-/* void getInfoByDates2(TList *s, TList *DoD): this procedure takes a date of death as input and returns the name
-   and information of the corresponding personality. */
+/* void getInfoByDates2(TList *s, TList *DoD): this procedure takes a date of
+   death as input and returns the name and information of the corresponding
+   personality. */
 void getInfoByDates2(TList *s, char DoD[]) {
   TList *current = s;
   while (current != NULL) {
@@ -188,7 +194,8 @@ TList *sortWord(TList *syn) {
   }
   return syn;
 }
-/* TList* sortWord2(TList *syn): this function sorts ascendingly the list of nodes according to the number of chars. */
+/* TList* sortWord2(TList *syn): this function sorts ascendingly the list of
+ * nodes according to the number of chars. */
 TList *sortWord2(TList *syn) {
   if (syn == NULL || syn->next == NULL) {
     return syn;
@@ -226,14 +233,15 @@ date *convert(char str[]) {
   return d;
 }
 int agecalculate(date *start, date *end) {
-  if (start == NULL || start->year == 0) return 0;
+  if (start == NULL || start->year == 0)
+    return 0;
   if (end == NULL || end->year == 0)
     return 2025 - start->year;
   return end->year - start->year;
 }
 
-/* TList* sortPersonality(TList *syn): this function sorts ascendingly the list of nodes according to the age of
-   personality. */
+/* TList* sortPersonality(TList *syn): this function sorts ascendingly the list
+   of nodes according to the age of personality. */
 TList *sortPersonality(TList *syn) {
   if (syn == NULL || syn->next == NULL) {
     return syn;
@@ -241,8 +249,7 @@ TList *sortPersonality(TList *syn) {
   TList *i, *j;
   for (i = syn; i->next != NULL; i = i->next) {
     for (j = i->next; j != NULL; j = j->next) {
-      if (agecalculate(convert(i->DoB), convert(i->DoD)) >
-          agecalculate(convert(j->DoB), convert(j->DoD))) {
+      if (agecalculate(convert(i->DoB), convert(i->DoD)) > agecalculate(convert(j->DoB), convert(j->DoD))) {
         char tmp_name[100], tmp_def[500], tmp_dob[20], tmp_dod[20];
         strcpy(tmp_name, i->name);
         strcpy(i->name, j->name);
@@ -261,8 +268,9 @@ TList *sortPersonality(TList *syn) {
   }
   return syn;
 }
-/* TList* deletepersonality(File *f, TList *s, TList *a, char *name): this function deletes a personality from the
-   original file and from both linked lists. */
+/* TList* deletepersonality(File *f, TList *s, TList *a, char *name): this
+   function deletes a personality from the original file and from both linked
+   lists. */
 TList *deletepersonality(FILE *f, TList *s, TList *a, char *name) {
   deleteNode(s, name);
   deleteNode(a, name);
@@ -285,15 +293,19 @@ TList *deletepersonality(FILE *f, TList *s, TList *a, char *name) {
   rename("data/tmp.txt", "data/persons.txt");
   return s;
 }
-/* TList* updatePersonality(File *f, TList *s, TList *a, char *name, char *definition, char *DoB, char *DoD): this
-   function updates a personality information; definition, date of birth, and date of death. */
+/* TList* updatePersonality(File *f, TList *s, TList *a, char *name, char
+   *definition, char *DoB, char *DoD): this function updates a personality
+   information; definition, date of birth, and date of death. */
 TList *updatePersonality(FILE *f, TList *s, TList *a, char *name, char *definition, char *DoB, char *DoD) {
   TList *current = s;
   while (current != NULL) {
     if (strcmp(current->name, name) == 0) {
-      if (definition) strcpy(current->definition, definition);
-      if (DoB) strcpy(current->DoB, DoB);
-      if (DoD) strcpy(current->DoD, DoD);
+      if (definition)
+        strcpy(current->definition, definition);
+      if (DoB)
+        strcpy(current->DoB, DoB);
+      if (DoD)
+        strcpy(current->DoD, DoD);
     }
     current = current->next;
   }
@@ -301,9 +313,12 @@ TList *updatePersonality(FILE *f, TList *s, TList *a, char *name, char *definiti
   current = a;
   while (current != NULL) {
     if (strcmp(current->name, name) == 0) {
-      if (definition) strcpy(current->definition, definition);
-      if (DoB) strcpy(current->DoB, DoB);
-      if (DoD) strcpy(current->DoD, DoD);
+      if (definition)
+        strcpy(current->definition, definition);
+      if (DoB)
+        strcpy(current->DoB, DoB);
+      if (DoD)
+        strcpy(current->DoD, DoD);
     }
     current = current->next;
   }
@@ -316,9 +331,10 @@ TList *updatePersonality(FILE *f, TList *s, TList *a, char *name, char *definiti
     while (fgets(line, sizeof(line), f)) {
       strcpy(name2, line);
       char *eq = strstr(name2, "=");
-      if (eq) *eq = '\0';
+      if (eq)
+        *eq = '\0';
       name2[strcspn(name2, "\n")] = '\0';
-      
+
       if (strcmp(name, name2) == 0) {
         fprintf(tmp, "%s=%s{%s}{%s}\n", name, definition, DoB, DoD);
       } else {
@@ -333,30 +349,30 @@ TList *updatePersonality(FILE *f, TList *s, TList *a, char *name, char *definiti
   return s;
 }
 
-/* TList* similarPersonality(TList *s, char *word): this function returns a list that contains all similar personalities
-   in terms of year of birth or year of death. */
+/* TList* similarPersonality(TList *s, char *word): this function returns a list
+   that contains all similar personalities in terms of year of birth or year of
+   death. */
 TList *similarPersonality(TList *s, char *word) {
   TList *current = s;
   TList *head = NULL;
   while (current != NULL) {
     if (strstr(current->DoB, word) != NULL || strstr(current->DoD, word) != NULL) {
-      head = insertAtTail(head, current->name, current->definition, current->DoB, current->DoD);
+      head = insertAtTail(head, current->name, current->definition,current->DoB, current->DoD);
     }
     current = current->next;
   }
   return head;
 }
 
-/* TList* countPersonality(TList *s, date *prt): this function returns a list that contains all the personalities where
-   the date prt is included (birth, death or any other event). */
+/* TList* countPersonality(TList *s, date *prt): this function returns a list
+   that contains all the personalities where the date prt is included (birth,
+   death or any other event). */
 TList *countPersonality(TList *s, date *prt) {
   TList *current = s;
   TList *head = NULL;
   while (current != NULL) {
-    if (strcmp(current->DoB, prt->full_date) == 0 ||
-        strcmp(current->DoD, prt->full_date) == 0) {
-      insertAtHead(head, current->name, current->definition, current->DoB,
-                   current->DoD);
+    if (strcmp(current->DoB, prt->full_date) == 0 || strcmp(current->DoD, prt->full_date) == 0) {
+      insertAtHead(head, current->name, current->definition, current->DoB,current->DoD);
     }
     current = current->next;
   }
@@ -370,54 +386,54 @@ int isPalindrome(char str[]) {
   }
   return 1;
 }
-/* TList* palindromeName(TList *s): this function returns the list that contains all sorted palindromes names,
-   where each word is inserted at the right place to get the list sorted (names are extracted from the definition
-   of personality or events such as city names, father names, etc.). */
+/* TList* palindromeName(TList *s): this function returns the list that contains
+   all sorted palindromes names */
 TList *palindromeName(TList *s) {
   TList *current = s;
   TList *head = NULL;
   while (current != NULL) {
     if (isPalindrome(current->name) == 1) {
-      head = insertAtHead(head, current->name, current->definition, current->DoB,current->DoD);
+      head = insertAtHead(head, current->name, current->definition,current->DoB, current->DoD);
     }
     current = current->next;
   }
   return head;
 }
-/* TList* mergeNodes(TList *s, TList *a): this function merges the two nodes of the first and third lists (personality,
-   and dates) into one node of a bidirectional list. */
+/* TList* mergeNodes(TList *s, TList *a): this function merges the two nodes of
+   the first and third lists (personality, and dates) into one node of a
+   bidirectional list. */
 TList *mergeNodes(TList *s, TList *a) {
-  if (s == NULL || a == NULL) return NULL;
+  if (s == NULL || a == NULL)
+    return NULL;
   TList *current = s;
   TList *current2 = a;
   TList *head = NULL;
   while (current != NULL && current2 != NULL) {
-    head = insertAtTail(head, current->name, current->definition, current2->DoB,
-                 current2->DoD);
+    head = insertAtTail(head, current->name, current->definition, current2->DoB, current2->DoD);
     current2 = current2->next;
     current = current->next;
   }
   return head;
 }
-/* TList* merge2Nodes(TList *s, TList *a): this function merges the two nodes of two previous lists into one node
-   of a circular list. */
+/* TList* merge2Nodes(TList *s, TList *a): this function merges the two nodes of
+   two previous lists into one node of a circular list. */
 TList *merge2Nodes(TList *s, TList *a) {
   if (s == NULL || a == NULL) return NULL;
   TList *current = s;
   TList *current2 = a;
   TList *head = NULL;
   while (current != NULL && current2 != NULL) {
-    head = insertAtHead2(head, current->name, current->definition, current2->DoB,
-                  current2->DoD);
+    head = insertAtHead2(head, current->name, current->definition, current2->DoB, current2->DoD);
     current2 = current2->next;
     current = current->next;
   }
   if (head != NULL) endpointhead(head);
   return head;
 }
-/* TList* addPersonality(TList *s, TList *a, char *name, char *DoB, char *DoD): this function adds a personality
-   with name and dates into the first and last list, also in the text file. */
-TList *addPersonality(TList *s, TList *a, char *name, char *definition,char *DoB, char *DoD) {
+/* TList* addPersonality(TList *s, TList *a, char *name, char *DoB, char *DoD):
+   this function adds a personality with name and dates into the first and last
+   list, also in the text file. */
+TList *addPersonality(TList *s, TList *a, char *name, char *definition, char *DoB, char *DoD) {
   s = insertAtHead(s, name, definition, DoB, DoD);
   a = insertAtHead(a, name, definition, DoB, DoD);
   FILE *f = fopen("data/history.txt", "a");
@@ -427,8 +443,8 @@ TList *addPersonality(TList *s, TList *a, char *name, char *definition,char *DoB
   }
   return s;
 }
-/* TList* addEvents(TList *b, char *namEvente, char *date): this function adds an event with its date, to the second
-   list, and also to the text file. */
+/* TList* addEvents(TList *b, char *namEvente, char *date): this function adds
+   an event with its date, to the second list, and also to the text file. */
 TList *addEvents(TList *b, char *namEvente, char *date) {
   b = insertAtTail(b, namEvente, NULL, NULL, date);
   FILE *f = fopen("data/events.txt", "a");
@@ -460,11 +476,9 @@ NodeQueue *createQNode(char *name, char *definition, char *DoB, char *DoD) {
   return node;
 }
 
-void enqueue(TQueue *queue, char *name, char *definition, char *DoB,
-             char *DoD) {
+void enqueue(TQueue *queue, char *name, char *definition, char *DoB, char *DoD) {
   NodeQueue *node = createQNode(name, definition, DoB, DoD);
-  if (node == NULL)
-    return;
+  if (node == NULL) return;
   if (queue->rear == NULL) {
     queue->front = queue->rear = node;
     return;
@@ -522,7 +536,8 @@ void freeQueue(TQueue *queue) {
 void initQueue(TQueue *queue) { queue->front = queue->rear = NULL; }
 // counts the number of words in a name
 int countWords(char *name) {
-  if (name == NULL || name[0] == '\0') return 0;
+  if (name == NULL || name[0] == '\0')
+    return 0;
   int count = 1;
   int len = (int)strlen(name);
   for (int i = 0; i < len; i++) {
@@ -532,8 +547,9 @@ int countWords(char *name) {
   return count;
 }
 
-/* TQueue* sName(TList *s): this function sorts the names according to the number of words of the name in a
-   queue where each part is separated by a space. */
+/* TQueue* sName(TList *s): this function sorts the names according to the
+   number of words of the name in a queue where each part is separated by a
+   space. */
 TQueue *sName(TList *s) {
   TQueue *queue = (TQueue *)malloc(sizeof(TQueue));
   if (queue == NULL)
@@ -576,11 +592,11 @@ TQueue *sName(TList *s) {
   free(arr);
   return queue;
 }
-/* TQueue* ageP(TList *a): this function sorts the words according to their age. */
+/* TQueue* ageP(TList *a): this function sorts the personalities according to their age.
+ */
 TQueue *ageP(TList *a) {
   TQueue *queue = (TQueue *)malloc(sizeof(TQueue));
-  if (queue == NULL)
-    return NULL;
+  if (queue == NULL) return NULL;
   initQueue(queue);
 
   int size = 0;
@@ -632,16 +648,18 @@ TQueue *ageP(TList *a) {
   free(arr);
   return queue;
 }
-/* TQueue* toQueue(TList *merged): this function converts the list obtained from Merge function into a queue. */
-TQueue* toQueue(TList *merged){
+/* TQueue* toQueue(TList *merged): this function converts the list obtained from
+ * Merge function into a queue. */
+TQueue *toQueue(TList *merged) {
   TQueue *queue = (TQueue *)malloc(sizeof(TQueue));
   if (queue == NULL)
     return NULL;
   initQueue(queue);
-  
+
   TList *current = merged;
   while (current != NULL) {
-    enqueue(queue, current->name, current->definition, current->DoB, current->DoD);
+    enqueue(queue, current->name, current->definition, current->DoB,
+            current->DoD);
     current = current->next;
   }
 

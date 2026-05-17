@@ -97,25 +97,22 @@ static date *convert(char str[]) {
   }
   return d;
 }
-// --------------------------------------------------------
-// this function built by ai so i dont understand it 
+/* helper function for subseqName */
 void printSub(char *word, char *res, int i, int j) {
     if (word[i] == '\0') {
         res[j] = '\0';
         if (j > 0) printf("%s\n", res);
         return;
     }
-    // Option 1: skip the character
     printSub(word, res, i + 1, j);
     
-    // Option 2: take the character
     res[j] = word[i];
     printSub(word, res, i + 1, j + 1);
 }
 
 /* void subseqName(char *word): this recursive procedure generates all possible subsequences of a given event. */
 void subseqName(char *word) {
-    char res[256]; // Simple fixed-size array instead of malloc
+    char res[256];
     printSub(word, res, 0, 0);
 }
 /* void longestSubyear(char *date1, char *date2): this recursive procedure prints all the events that overlap with

@@ -140,15 +140,14 @@ TList* stackToList(TStack *stk){
 /* TStack* addNameStack(TStack *stk, char *name, char *definition, char *DoB, char *DoD): this function adds a
    personality name with definition and dates into a sorted stack. */
 TStack* addNameStack(TStack *stk, char *name, char *definition, char *DoB, char *DoD){
-    if(stk == NULL) return NULL;
     TStack *newNode = (TStack*)malloc(sizeof(TStack));
+    if(newNode == NULL) return stk;
     strcpy(newNode->name, name);
     strcpy(newNode->definition, definition);
     strcpy(newNode->DoB, DoB);
     strcpy(newNode->DoD, DoD);
     newNode->event_date[0] = '\0';
-    newNode->next = stk;
-    return newNode;    
+    return sortedInsert(stk, newNode);    
 }
 /* countWords is declared in linked_list.h and defined in linked_list.c */
 /* TStack* definitionStack(TStack *stk): this function sorts the personality names according to the number of
@@ -163,19 +162,18 @@ TStack* definitionStack(TStack *stk){
         while(cur->next != NULL){
             if(countWords(cur->definition) > countWords(cur->next->definition)){
                 char tmp_name[100], tmp_def[500], tmp_DoB[20], tmp_DoD[20];
-                // swap name
                 strcpy(tmp_name, cur->name);
                 strcpy(cur->name, cur->next->name);     
                 strcpy(cur->next->name, tmp_name);
-                // swap definition
+
                 strcpy(tmp_def, cur->definition); 
                 strcpy(cur->definition, cur->next->definition); 
                 strcpy(cur->next->definition, tmp_def);
-                // swap date of birth
+
                 strcpy(tmp_DoB, cur->DoB); 
                 strcpy(cur->DoB, cur->next->DoB);       
                 strcpy(cur->next->DoB, tmp_DoB);
-                // swap date of death
+                
                 strcpy(tmp_DoD, cur->DoD); 
                 strcpy(cur->DoD, cur->next->DoD);      
                 strcpy(cur->next->DoD, tmp_DoD);
@@ -197,19 +195,18 @@ void sortEventStack(TStack *stk){
         while(cur->next != NULL){
             if(countWords(cur->event_date) > countWords(cur->next->event_date)){
                 char tmp_name[100], tmp_def[500], tmp_DoB[20], tmp_DoD[20];
-                // swap name
                 strcpy(tmp_name, cur->name);
                 strcpy(cur->name, cur->next->name);     
                 strcpy(cur->next->name, tmp_name);
-                // swap definition
+
                 strcpy(tmp_def, cur->definition); 
                 strcpy(cur->definition, cur->next->definition); 
                 strcpy(cur->next->definition, tmp_def);
-                // swap date of birth
+
                 strcpy(tmp_DoB, cur->DoB); 
                 strcpy(cur->DoB, cur->next->DoB);       
                 strcpy(cur->next->DoB, tmp_DoB);
-                // swap date of death
+
                 strcpy(tmp_DoD, cur->DoD); 
                 strcpy(cur->DoD, cur->next->DoD);      
                 strcpy(cur->next->DoD, tmp_DoD);
@@ -226,10 +223,10 @@ void pronunciationStack(TStack *stk, TStack **shortStack, TStack **longStack){
     TStack *current = stk;
     while(current != NULL){
         TStack *newNode = (TStack*)malloc(sizeof(TStack));
-        strcpy(newNode->name,       current->name);
+        strcpy(newNode->name, current->name);
         strcpy(newNode->definition, current->definition);
-        strcpy(newNode->DoB,        current->DoB);
-        strcpy(newNode->DoD,        current->DoD);
+        strcpy(newNode->DoB, current->DoB);
+        strcpy(newNode->DoD, current->DoD);
         strcpy(newNode->event_date, current->event_date);
         if(countWords(current->definition) < 10){
             newNode->next = *shortStack;
@@ -302,11 +299,9 @@ void continuousSearch(TStack *stk){
                     count++;
                 j = j->next;
             }
-
             // print group only if more than one event shares this date (overlap)
             if(count > 1){
-                printf("Events overlapping on date %02d/%02d/%04d:\n",
-                       di.day, di.month, di.year);
+                printf("Events overlapping on date %02d/%02d/%04d:\n",di.day, di.month, di.year);
                 j = i;
                 while(j != NULL){
                     if(compareDates(stackConvert(j->event_date), di))
@@ -337,15 +332,13 @@ static TStack* appendToEnd(TStack *head, TStack *node){
 /* TStack* recRevStack (TStack *stk): this function reverses a stack using recursion. */
 TStack* recRevStack(TStack *stk){
     if(stk == NULL) return NULL;
-    /* copy current node */
     TStack *newNode = (TStack*)malloc(sizeof(TStack));
-    strcpy(newNode->name,       stk->name);
-    strcpy(newNode->definition, stk->definition);
-    strcpy(newNode->DoB,        stk->DoB);
-    strcpy(newNode->DoD,        stk->DoD);
-    strcpy(newNode->event_date, stk->event_date);
+    strcpy(newNode->name,stk->name);
+    strcpy(newNode->definition,stk->definition);
+    strcpy(newNode->DoB,stk->DoB);
+    strcpy(newNode->DoD,stk->DoD);
+    strcpy(newNode->event_date,stk->event_date);
     newNode->next = NULL;
-    /* reverse the rest, then append current node at the end */
     TStack *reversedRest = recRevStack(stk->next);
     return appendToEnd(reversedRest, newNode);
 }
