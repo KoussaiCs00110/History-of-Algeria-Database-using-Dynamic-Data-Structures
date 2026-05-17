@@ -36,12 +36,13 @@ enum { SEC_LL=0, SEC_STK, SEC_BST, SEC_REC, SEC_COUNT };
 static const char *secNames[]={"Linked List","Stack","BST","Recursion"};
 
 /* ── global data ── */
-static TList *listS=NULL, *listA=NULL;
+static TList *listS=NULL, *listA=NULL, *listB=NULL;
 static TStack *stack=NULL;
 static TStack *eventStack=NULL;
 static TTree *tree=NULL;
 static char outBuf[OUTBUF];
 static int outScroll=0;
+static int opScroll=0;
 static char inName[100]="", inDef[256]="", inDoB[20]="", inDoD[20]="";
 static int activeField=-1;
 static int curSection=0;
@@ -149,6 +150,23 @@ static void loadData(void){
         }
         fclose(fe);
         eventStack=tmp;
+    }
+    /* load events into listB (TList) for addEvents operations */
+    FILE *fe2=fopen("data/events.txt","r");
+    if(fe2){
+        char line[512];
+        while(fgets(line,sizeof(line),fe2)){
+            line[strcspn(line,"\n")]=0;
+            char *eq=strchr(line,'=');
+            if(!eq) continue;
+            *eq='\0';
+            char *rest=eq+1;
+            char evdate[20]="";
+            char *ob=strchr(rest,'{');
+            if(ob){ char *cb=strchr(ob+1,'}'); if(cb){ int l=(int)(cb-(ob+1)); if(l>19)l=19; strncpy(evdate,ob+1,l); evdate[l]='\0'; } }
+            listB=insertAtTail(listB,line,rest,NULL,evdate);
+        }
+        fclose(fe2);
     }
 }
 
@@ -304,8 +322,9 @@ static void treeToBufPost(TTree *t,int depth,int max,int *cnt){
 static const char *llOps[]={"Show Personalities","Show Dates","Search by DoB",
     "Search by DoD","Sort Alphabetically","Sort by Name Length","Sort by Age",
     "Delete Personality","Similar Personality","Palindrome Names",
-    "Merge Nodes","Sort Queue by Words","Sort Queue by Age","Convert to Queue"};
-#define LL_COUNT 14
+    "Merge Nodes","Sort Queue by Words","Sort Queue by Age","Convert to Queue",
+    "Update Personality","Count by Date","Circular Merge","Add Personality","Add Event"};
+#define LL_COUNT 19
 
 static void execLL(int op){
     outClear();
@@ -341,6 +360,36 @@ static void execLL(int op){
         while(cs&&ca){ merged=insertAtTail(merged,cs->name,cs->definition,ca->DoB,ca->DoD); cs=cs->next;ca=ca->next; }
         TQueue *q=toQueue(merged); if(q) printQueueToBuf(q,100); else outAppend("Empty.\n");
     } break;
+    case 14: /* updatePersonality */
+        if(!inName[0]){outAppend("Enter Name, Def, DoB, DoD\n");break;}
+        { FILE *f=fopen("data/history.txt","r");
+          if(f){ listS=updatePersonality(f,listS,listA,inName,inDef,inDoB,inDoD); outAppend("Updated successfully.\n"); }
+          else outAppend("Cannot open history.txt\n");
+        } break;
+    case 15: /* countPersonality */
+        if(!inDoB[0]){outAppend("Enter full date in DoB field (e.g. 23/09/1808)\n");break;}
+        { date d; memset(&d,0,sizeof(d));
+          strncpy(d.full_date,inDoB,19); d.full_date[19]='\0';
+          sscanf(inDoB,"%d/%d/%d",&d.day,&d.month,&d.year);
+          TList *r=countPersonality(listS,&d);
+          if(r){ outAppend("Personalities matching date:\n"); printListToBuf(r,100); }
+          else outAppend("No personalities found for that date.\n");
+        } break;
+    case 16: /* merge2Nodes - circular list */
+        { TList *m=merge2Nodes(listS,listA);
+          if(m){ outAppend("Circular merged list (first 50 nodes):\n"); printListToBuf(m,50); }
+          else outAppend("Merge returned empty.\n");
+        } break;
+    case 17: /* addPersonality */
+        if(!inName[0]){outAppend("Enter Name, Def, DoB, DoD\n");break;}
+        { listS=addPersonality(listS,listA,inName,inDef,inDoB,inDoD);
+          char msg[256]; snprintf(msg,256,"Added '%s' to list and file.\n",inName); outAppend(msg);
+        } break;
+    case 18: /* addEvents */
+        if(!inName[0]||!inDoB[0]){outAppend("Enter event name in Name, date in DoB (DD/MM/YYYY)\n");break;}
+        { listB=addEvents(listB,inName,inDoB);
+          char msg[256]; snprintf(msg,256,"Event '%s' added on %s.\n",inName,inDoB); outAppend(msg);
+        } break;
     }
 }
 
@@ -461,8 +510,8 @@ static void execBST(int op){
 
 /* Recursion ops */
 static const char *recOps[]={"Count Occurrence","Name Permutation","Subsequences",
-    "Distinct Subseq","Is Palindrome?"};
-#define REC_COUNT 5
+    "Distinct Subseq","Is Palindrome?","Remove Occurrence","Replace Occurrence","Events in Range"};
+#define REC_COUNT 8
 
 static void execREC(int op){
     outClear();
@@ -498,6 +547,34 @@ static void execREC(int op){
           bool p=isPalindromeWord(inName,0,len-1);
           outAppend(p?"YES - is palindrome\n":"NO - not palindrome\n");
         } break;
+    case 5: /* removeOccurrence */
+        if(!inName[0]){outAppend("Enter word in Name field\n");break;}
+        { FILE *f=fopen("data/history.txt","r");
+          FILE *tmp=fopen("data/tmp_rem.txt","w");
+          if(f&&tmp){
+            removeOccurrence(f,tmp,inName); fclose(f); fclose(tmp);
+            remove("data/history.txt"); rename("data/tmp_rem.txt","data/history.txt");
+            char msg[200]; snprintf(msg,200,"Removed all occurrences of '%s'.\n",inName); outAppend(msg);
+          } else { if(f)fclose(f); if(tmp)fclose(tmp); outAppend("File error.\n"); }
+        } break;
+    case 6: /* replaceOccurence */
+        if(!inName[0]){outAppend("Enter Name, Def, DoB, DoD\n");break;}
+        { FILE *f=fopen("data/history.txt","r");
+          FILE *tmp=fopen("data/tmp_rep.txt","w");
+          if(f&&tmp){
+            replaceOccurence(f,tmp,inName,inDef,inDoB,inDoD); fclose(f); fclose(tmp);
+            remove("data/history.txt"); rename("data/tmp_rep.txt","data/history.txt");
+            char msg[200]; snprintf(msg,200,"Replaced all occurrences of '%s'.\n",inName); outAppend(msg);
+          } else { if(f)fclose(f); if(tmp)fclose(tmp); outAppend("File error.\n"); }
+        } break;
+    case 7: /* longestSubyear */
+        if(!inDoB[0]||!inDoD[0]){outAppend("Enter date1 in DoB, date2 in DoD (DD/MM/YYYY)\n");break;}
+        { FILE *f=fopen("data/events.txt","r");
+          if(f){
+            captureStart(); longestSubyear(f,inDoB,inDoD); captureEnd(); fclose(f);
+            if(strlen(outBuf)<60) outAppend("No events found in that date range.\n");
+          } else outAppend("events.txt not found.\n");
+        } break;
     }
 }
 
@@ -523,10 +600,13 @@ int main(void){
     outAppend("Welcome! Select a section and operation.\n");
 
     while(!WindowShouldClose()){
-        /* scroll */
+        /* scroll: left panel = op list, right panel = output */
         float wheel=GetMouseWheelMove();
-        if(wheel!=0) outScroll-=(int)(wheel*40);
-        if(outScroll<0) outScroll=0;
+        if(wheel!=0){
+            Vector2 mp=GetMousePosition();
+            if(mp.x<LEFT_W){ opScroll-=(int)(wheel*36); if(opScroll<0)opScroll=0; }
+            else { outScroll-=(int)(wheel*40); if(outScroll<0)outScroll=0; }
+        }
 
         /* click outside fields */
         if(IsMouseButtonPressed(MOUSE_BUTTON_LEFT)){
@@ -545,14 +625,14 @@ int main(void){
         int ly=TOP_H+10;
         for(int i=0;i<SEC_COUNT;i++){
             if(guiBtn(5,ly,LEFT_W-10,BTN_H,secNames[i],curSection==i)){
-                curSection=i; selOp=-1;
+                curSection=i; selOp=-1; opScroll=0;
             }
             ly+=BTN_H+BTN_PAD;
         }
         ly+=10;
         DrawLine(5,ly,LEFT_W-5,ly,C_ACCENT); ly+=10;
 
-        /* ── operation buttons ── */
+        /* ── operation buttons (scrollable) ── */
         const char **ops=NULL; int opCnt=0;
         switch(curSection){
             case SEC_LL:  ops=llOps;  opCnt=LL_COUNT; break;
@@ -560,11 +640,27 @@ int main(void){
             case SEC_BST: ops=bstOps; opCnt=BST_COUNT; break;
             case SEC_REC: ops=recOps; opCnt=REC_COUNT; break;
         }
-        for(int i=0;i<opCnt&&ly+BTN_H<H-BOT_H;i++){
-            if(guiBtn(5,ly,LEFT_W-10,BTN_H,ops[i],selOp==i)){
-                selOp=i; executeOp();
+        int opAreaY=ly, opAreaH=H-BOT_H-opAreaY;
+        int maxOpScroll=opCnt*(BTN_H+BTN_PAD)-opAreaH;
+        if(maxOpScroll<0) maxOpScroll=0;
+        if(opScroll>maxOpScroll) opScroll=maxOpScroll;
+        BeginScissorMode(0,opAreaY,LEFT_W,opAreaH);
+        int oly=opAreaY-opScroll;
+        for(int i=0;i<opCnt;i++){
+            if(oly+BTN_H>opAreaY && oly<opAreaY+opAreaH){
+                if(guiBtn(5,oly,LEFT_W-10,BTN_H,ops[i],selOp==i)){
+                    selOp=i; executeOp();
+                }
             }
-            ly+=BTN_H+BTN_PAD;
+            oly+=BTN_H+BTN_PAD;
+        }
+        EndScissorMode();
+        /* scroll indicator */
+        if(maxOpScroll>0){
+            int barH=(int)((float)opAreaH/opCnt*(BTN_H+BTN_PAD)*(opAreaH/(float)(opCnt*(BTN_H+BTN_PAD))));
+            if(barH<20)barH=20;
+            int barY=opAreaY+(int)((float)opScroll/maxOpScroll*(opAreaH-barH));
+            DrawRectangle(LEFT_W-4,barY,3,barH,C_GRAY);
         }
 
         /* ── output area ── */
